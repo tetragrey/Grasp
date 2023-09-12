@@ -1,0 +1,97 @@
+import netCDF4
+import tarfile
+import xarray as xr
+
+
+
+def write_to_file(file_path, text):
+    """
+    Write text to a file.
+
+    Args:
+        file_path (str): The path to the file where the text will be written.
+        text (str): The text to write to the file.
+    """
+    try:
+        # Open the file in append mode ('a') to add text to the end
+        with open(file_path, 'a') as file:
+            file.write(text)
+        print(f"Text written to {file_path} successfully.")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+
+
+def ncmetareader(file_path):
+    # Open the netCDF4 file
+    nc_file = netCDF4.Dataset(file_path, 'r')  # Replace 'your_file.nc' with your actual file name
+    xdata = xr.open_dataset(xr.backends.NetCDF4DataStore(nc_file))
+    print(xdata)
+    print('----------------------------------------------------')
+    print(nc_file)
+    print('----------------------------------------------------')
+    # Access global attributes
+    global_attributes = nc_file.ncattrs()
+    print("Global Attributes:")
+    for attr in global_attributes:
+        print(f"{attr}: {getattr(nc_file, attr)}")
+
+    # Access dimensions
+    dimensions = nc_file.dimensions
+    print("\nDimensions:")
+    for dim_name, dim_obj in dimensions.items():
+        print(f"{dim_name}: {len(dim_obj)}")
+
+    # Access variables and their attributes
+    variables = nc_file.variables
+    print("\nVariables:")
+    for var_name, var_obj in variables.items():
+        print(f"{var_name}:")
+        print(f"Dimensions: {var_obj.dimensions}")
+        print(f"Attributes: {var_obj.ncattrs()}")
+        for attr in var_obj.ncattrs():
+            print(f" - {attr}: {getattr(var_obj, attr)}")
+        print()
+    nc_file.close()
+
+
+# Tar reader
+
+def read_tar_names(tar_path):
+    # This function reads the filenames within a tarball
+    with tarfile.open(tar_path, 'r:gz') as tar:
+        return tar.getnames()
+
+
+def extract_tar(tar_path, target_directory):
+    # This function extracts files from a tarball
+    with tarfile.open(tar_path, 'r:gz') as tar:
+        for name in read_tar_names(tar_path):
+            tar.extract(name, path=target_directory)
+
+
+# functions for sorting nc files:
+
+def sort_filenames(directory_path):
+    filenames = os.listdir(directory_path)
+    sorted_filenames = natsorted(filenames)
+    year_pattern = re.compile(r'(\d{4})')  # Regular expression to match 4-digit years
+    files_with_years = [(filename, int(year_pattern.search(filename).group())) for filename in sorted_filenames]
+    return files_with_years
+
+
+def sort_nc_averages(directory_path, verbose=False):
+    files_with_years = sort_filenames(directory_path)
+    global_yearly_avgs = []
+    for filename, year in files_with_years:
+        avg = nc_averager(directory_path + '/' + filename).item()
+        global_yearly_avgs.append(avg)
+        if verbose:
+            print(f'{year}: {filename}')
+    return global_yearly_avgs
+
+
+
+
+if __name__ == '__main__':
+   return()
