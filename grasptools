@@ -91,7 +91,36 @@ def sort_nc_averages(directory_path, verbose=False):
     return global_yearly_avgs
 
 
+def roxprint(file_path, text, mode='a'):
+    """
+    Write text to a file.
+
+    Args:
+        file_path (str): The path to the file where the text will be written.
+        text (str): The text to write to the file.
+        mode (str): either 'a' for append, or 'w' for write, and by default it's 'a', which doesn't delete the file.
+    """
+    try:
+        # By default, opens the file in append mode ('a') to add text to the end
+        with open(file_path, mode) as file:
+            file.write(text)
+    except Exception as e:
+        print(f"write_to_file: An error occurred: {str(e)}")
+
+    # # Example usage:
+    # file_path = "roxprint_output.txt"
+    # text_to_write = "Hello, world!\n"
+    #
+    # # printing two times
+    # roxprint(file_path, text_to_write)
+    # roxprint(file_path, text_to_write)
+
+    # # Add the following to a function if you want to know when it's called:
+    # frame = inspect.currentframe()
+    # fname = inspect.getframeinfo(frame).function + "\n"
+    # roxpath = "roxprint_output.txt"
+    # grasptools.roxprint(roxpath, fname)
 
 
 if __name__ == '__main__':
-   return()
+   print('GRASP has been run.')
